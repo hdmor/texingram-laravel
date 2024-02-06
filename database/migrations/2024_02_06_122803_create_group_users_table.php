@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -13,7 +12,15 @@ return new class extends Migration
     {
         Schema::create('group_users', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->string('status', 24); // approved, pending
+            $table->string('role', 24); // admin, user
+            $table->string('token', 1024)->nullable();
+            $table->timestamp('token_expire_date')->nullable();
+            $table->timestamp('token_used')->nullable();
+            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('group_id')->constrained('groups');
+            $table->foreignId('created_by')->constrained('users');
+            $table->timestamp('created_at')->nullable();
         });
     }
 
