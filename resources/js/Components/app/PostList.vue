@@ -60,7 +60,7 @@ const post3 = {
 </script>
 
 <template>
-    <div class="overflow-y-auto gap-3 flex flex-col">
+    <div class="overflow-y-auto space-y-3">
         <PostItem :post="post1"/>
         <PostItem :post="post2"/>
         <PostItem :post="post3"/>

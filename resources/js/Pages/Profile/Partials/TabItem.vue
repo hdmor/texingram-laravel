@@ -1,0 +1,17 @@
+<script setup>
+
+defineProps({
+    selected: Boolean,
+    title: String
+})
+</script>
+
+<template>
+    <button :class="['px-4 py-2.5 outline-none text-sm', selected ? 'bg-blue-100 text-blue-500 border-b-2 border-blue-500' : 'text-gray-700']">
+        {{ title }}
+    </button>
+</template>
+
+<style scoped>
+
+</style>

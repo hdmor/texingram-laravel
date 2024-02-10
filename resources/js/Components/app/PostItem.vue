@@ -1,5 +1,6 @@
 <script setup>
 import {Disclosure, DisclosureButton, DisclosurePanel} from '@headlessui/vue'
+import PrimaryButton from "@/Components/PrimaryButton.vue";
 
 defineProps({
     post: Object
@@ -11,30 +12,30 @@ function is_image(attachment) {
 </script>
 
 <template>
-    <div class="bg-white border rounded p-4 shadow-sm">
+    <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow rounded p-4 shadow-sm">
         <div class="flex items-center gap-3 mb-3">
             <a href="javascript:void(0)">
                 <img :src="post.user.avatar" alt="avatar" class="w-[48px] rounded-full border border-2 transition-all hover:border-blue-500">
             </a>
             <div>
                 <h4 class="font-bold flex items-center">
-                    <a href="javascript:void(0)" class="hover:underline">{{ post.user.name }}</a>
+                    <a href="javascript:void(0)" class="font-medium text-sm text-gray-700 dark:text-gray-300 hover:underline">{{ post.user.name }}</a>
                     <template v-if="post.group">
-                        <svg class="mx-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000"
+                        <svg class="mx-2" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff"
                              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M13 17l5-5-5-5M6 17l5-5-5-5"/>
                         </svg>
-                        <a href="javascript:void(0)" class="hover:underline">{{ post.group.name }}</a>
+                        <a href="javascript:void(0)" class="font-medium text-sm text-gray-700 dark:text-gray-300 hover:underline">{{ post.group.name }}</a>
                     </template>
                 </h4>
-                <small class="text-gray-400">{{ post.created_at }}</small>
+                <small class="text-sm text-gray-600 dark:text-gray-400">{{ post.created_at }}</small>
             </div>
         </div>
         <div>
             <Disclosure v-slot="{ open }">
-                <div v-show="!open" v-html="post.body.substring(0,200)"/>
+                <div v-show="!open" v-html="post.body.substring(0,200)" class="text-sm text-gray-600 dark:text-gray-400"/>
                 <DisclosurePanel>
-                    <div v-html="post.body"/>
+                    <div v-html="post.body" class="text-sm text-gray-600 dark:text-gray-400"/>
                 </DisclosurePanel>
                 <div class="flex justify-end my-3">
                     <DisclosureButton class="text-blue-500 hover:underline">Read {{ open ? 'Less' : 'More' }}</DisclosureButton>
@@ -44,7 +45,8 @@ function is_image(attachment) {
         <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-3">
             <template v-for="attachment of post.attachments" :key="attachment.id">
                 <div class="group bg-blue-100 aspect-square flex flex-col items-center justify-center relative">
-                    <button class="opacity-0 group-hover:opacity-100 transition-all w-8 h-8 flex items-center justify-center bg-gray-700 hover:bg-gray-800 rounded absolute right-2 top-2">
+                    <button
+                        class="opacity-0 group-hover:opacity-100 transition-all w-8 h-8 flex items-center justify-center bg-gray-700 hover:bg-gray-800 rounded absolute right-2 top-2">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2"
                              stroke-linecap="round" stroke-linejoin="round">
                             <path d="M3 15v4c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2v-4M17 9l-5 5-5-5M12 12.8V2.5"/>
@@ -63,14 +65,21 @@ function is_image(attachment) {
             </template>
         </div>
         <div class="flex gap-2">
-            <button class="flex items-center justify-center py-2 px-4 bg-gray-100 hover:bg-gray-200 gap-3 rounded-lg flex-1 text-gray-800">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+            <PrimaryButton class="flex flex-1 items-center justify-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+                </svg>
                 Like
-            </button>
-            <button class="flex items-center justify-center py-2 px-4 bg-gray-100 hover:bg-gray-200 gap-3 rounded-lg flex-1 text-gray-800">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+            </PrimaryButton>
+            <PrimaryButton class="flex flex-1 items-center justify-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                        d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                </svg>
                 Comment
-            </button>
+            </PrimaryButton>
         </div>
     </div>
 </template>
