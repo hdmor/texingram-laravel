@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
@@ -18,7 +19,7 @@ class ProfileController extends Controller
         return Inertia::render('Profile/Index', [
             'mustVerifyEmail' => $user instanceof MustVerifyEmail,
             'status' => session('status'),
-            'profile' => $user
+            'profile' => new UserResource($user)
         ]);
     }
 
@@ -57,5 +58,26 @@ class ProfileController extends Controller
         $request->session()->regenerateToken();
 
         return Redirect::to('/');
+    }
+
+    public function updateImage(Request $request)
+    {
+        $user = auth()->user();
+        if ($user) {
+            $data = $request->validate([
+                'avatar' => ['image', 'mimes:png,jpg,jpeg', 'nullable'],
+                'cover' => ['image', 'mimes:png,jpg,jpeg', 'nullable']
+            ]);
+            $avatar = $request->file('avatar') ?? null;
+            $cover = $request->file('cover') ?? null;
+
+            if ($avatar)
+                $user->update(['avatar_path' => $avatar->store("avatars/{$user->getAuthIdentifier()}", 'public')]);
+            if ($cover)
+                $user->update(['cover_path' => $cover->store("covers/{$user->getAuthIdentifier()}", 'public')]);
+
+//            session('success', 'cover image has been updated successfully.');
+            return back()->with('status', 'update-image');
+        } else return Inertia::render(abort(403));
     }
 }
