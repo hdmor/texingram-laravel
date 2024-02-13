@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class ProfileController extends Controller
@@ -71,10 +72,14 @@ class ProfileController extends Controller
             $avatar = $request->file('avatar') ?? null;
             $cover = $request->file('cover') ?? null;
 
-            if ($avatar)
-                $user->update(['avatar_path' => $avatar->store("avatars/{$user->getAuthIdentifier()}", 'public')]);
-            if ($cover)
-                $user->update(['cover_path' => $cover->store("covers/{$user->getAuthIdentifier()}", 'public')]);
+            if ($avatar) {
+                if ($user->avatar_path) Storage::disk('public')->delete($user->avatar_path);
+                $user->update(['avatar_path' => $avatar->store("avatars/user-{$user->getAuthIdentifier()}", 'public')]);
+            }
+            if ($cover) {
+                if ($user->cover_path) Storage::disk('public')->delete($user->cover_path);
+                $user->update(['cover_path' => $cover->store("covers/user-{$user->getAuthIdentifier()}", 'public')]);
+            }
 
 //            session('success', 'cover image has been updated successfully.');
             return back()->with('status', 'update-image');
