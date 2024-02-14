@@ -20,6 +20,7 @@ class ProfileController extends Controller
         return Inertia::render('Profile/Index', [
             'mustVerifyEmail' => $user instanceof MustVerifyEmail,
             'status' => session('status'),
+            'success_message' => session('success_message'),
             'profile' => new UserResource($user)
         ]);
     }
@@ -72,17 +73,18 @@ class ProfileController extends Controller
             $avatar = $request->file('avatar') ?? null;
             $cover = $request->file('cover') ?? null;
 
+            $message = '';
             if ($avatar) {
                 if ($user->avatar_path) Storage::disk('public')->delete($user->avatar_path);
-                $user->update(['avatar_path' => $avatar->store("avatars/user-{$user->getAuthIdentifier()}", 'public')]);
+                $user->update(['avatar_path' => $avatar->store("user-{$user->getAuthIdentifier()}", 'public')]);
+                $message = 'Your profile avatar image has been updated successfully.';
             }
             if ($cover) {
                 if ($user->cover_path) Storage::disk('public')->delete($user->cover_path);
-                $user->update(['cover_path' => $cover->store("covers/user-{$user->getAuthIdentifier()}", 'public')]);
+                $user->update(['cover_path' => $cover->store("user-{$user->getAuthIdentifier()}", 'public')]);
+                $message = 'Your profile cover image has been updated successfully.';
             }
-
-//            session('success', 'cover image has been updated successfully.');
-            return back()->with('status', 'update-image');
+            return back()->with('success_message', $message);
         } else return Inertia::render(abort(403));
     }
 }
