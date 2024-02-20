@@ -61,30 +61,27 @@ const resetCoverImage = _ => {
     form.cover = null;
     coverImageSource.value = null;
 }
-const successMessageVisibility = ref(true);
 const submitAvatarImage = _ => {
-    successMessageVisibility.value = true;
     form.post(route('profile.image'), {
         onSuccess: _ => {
             resetAvatarImage();
-            setTimeout(() => {
-                successMessageVisibility.value = false
-            }, 3000);
         }
     })
 }
 const submitCoverImage = _ => {
-    successMessageVisibility.value = true;
     form.post(route('profile.image'), {
         onSuccess: _ => {
             resetCoverImage();
-            setTimeout(() => {
-                successMessageVisibility.value = false
-            }, 3000);
         }
     })
 }
-// watch(() => props.success_message)
+const successMessageVisibility = ref(true);
+watch(() => props.success_message, (newValue) => {
+    successMessageVisibility.value = true;
+    setTimeout(() => {
+        successMessageVisibility.value = false;
+    }, 3000);
+})
 </script>
 
 <template>
