@@ -4,7 +4,7 @@ import {Tab, TabGroup, TabList, TabPanel, TabPanels} from '@headlessui/vue'
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import TabItem from "@/Pages/Profile/Partials/TabItem.vue";
 import Edit from "@/Pages/Profile/Edit.vue";
-import {computed, ref} from "vue";
+import {computed, ref, watch} from "vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 
@@ -84,6 +84,7 @@ const submitCoverImage = _ => {
         }
     })
 }
+// watch(() => props.success_message)
 </script>
 
 <template>
@@ -164,24 +165,12 @@ const submitCoverImage = _ => {
                             </button>
                         </div>
                     </div>
-                    <div class="flex justify-between items-center flex-1 p-4">
-                        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ profile.name }}</h2>
-                        <PrimaryButton v-if="isMyProfile" class="flex justify-center items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000000"
-                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polygon points="16 3 21 8 8 21 3 21 3 16 16 3"></polygon>
-                            </svg>
-                            Edit Profile
-                        </PrimaryButton>
-                    </div>
+                    <h2 class="py-3 text-xl font-semibold text-gray-900 dark:text-gray-100">{{ profile.name }}</h2>
                 </div>
             </div>
             <div class="border-t">
                 <TabGroup>
                     <TabList class="flex bg-white rounded-b">
-                        <Tab v-if="isMyProfile" as="template" v-slot="{ selected }">
-                            <TabItem :selected="selected" title="About"/>
-                        </Tab>
                         <Tab as="template" v-slot="{ selected }">
                             <TabItem :selected="selected" title="Posts"/>
                         </Tab>
@@ -194,12 +183,12 @@ const submitCoverImage = _ => {
                         <Tab as="template" v-slot="{ selected }">
                             <TabItem :selected="selected" title="Photos"/>
                         </Tab>
+                        <Tab v-if="isMyProfile" as="template" v-slot="{ selected }">
+                            <TabItem :selected="selected" title="My Profile"/>
+                        </Tab>
                     </TabList>
 
-                    <TabPanels class="mt-6 mb-4">
-                        <TabPanel key="about" v-if="isMyProfile">
-                            <Edit :must-verify-email="mustVerifyEmail" :status="status"/>
-                        </TabPanel>
+                    <TabPanels class="my-4">
                         <TabPanel key="posts" class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow rounded">
                             <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Posts</h2>
                         </TabPanel>
@@ -211,6 +200,9 @@ const submitCoverImage = _ => {
                         </TabPanel>
                         <TabPanel key="photos" class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow rounded">
                             <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Photos</h2>
+                        </TabPanel>
+                        <TabPanel key="about" v-if="isMyProfile">
+                            <Edit :must-verify-email="mustVerifyEmail" :status="status"/>
                         </TabPanel>
                     </TabPanels>
                 </TabGroup>
