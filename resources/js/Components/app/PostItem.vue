@@ -15,7 +15,8 @@ function is_image(attachment) {
     <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow rounded p-4 shadow-sm">
         <div class="flex items-center gap-3 mb-3">
             <a href="javascript:void(0)">
-                <img :src="post.user.avatar" alt="avatar" class="w-[48px] rounded-full border border-2 transition-all hover:border-blue-500">
+                <img :src="post.user.avatar_url || '/images/profile.png'" alt="avatar"
+                     class="w-[48px] rounded-full border border-2 transition-all hover:border-blue-500">
             </a>
             <div>
                 <h4 class="font-bold flex items-center">
@@ -34,12 +35,14 @@ function is_image(attachment) {
         <div>
             <Disclosure v-slot="{ open }">
                 <div v-show="!open" v-html="post.body.substring(0,200)" class="text-sm text-gray-600 dark:text-gray-400"/>
-                <DisclosurePanel>
-                    <div v-html="post.body" class="text-sm text-gray-600 dark:text-gray-400"/>
-                </DisclosurePanel>
-                <div class="flex justify-end my-3">
-                    <DisclosureButton class="text-blue-500 hover:underline">Read {{ open ? 'Less' : 'More' }}</DisclosureButton>
-                </div>
+                <template v-if="post.body.length >= 200">
+                    <DisclosurePanel>
+                        <div v-html="post.body" class="text-sm text-gray-600 dark:text-gray-400"/>
+                    </DisclosurePanel>
+                    <div class="flex justify-end my-3">
+                        <DisclosureButton class="text-blue-500 hover:underline">Read {{ open ? 'Less' : 'More' }}</DisclosureButton>
+                    </div>
+                </template>
             </Disclosure>
         </div>
         <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-3">

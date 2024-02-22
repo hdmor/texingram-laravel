@@ -76,7 +76,7 @@ const submitCoverImage = _ => {
     })
 }
 const successMessageVisibility = ref(true);
-watch(() => props.success_message, (newValue) => {
+watch(() => props.success_message, _ => {
     successMessageVisibility.value = true;
     setTimeout(() => {
         successMessageVisibility.value = false;
