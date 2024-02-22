@@ -19,6 +19,7 @@ onMounted(() => {
     if (input.value.hasAttribute('autofocus')) {
         input.value.focus();
     }
+    onInputChange();
 });
 
 defineExpose({focus: () => input.value.focus()});

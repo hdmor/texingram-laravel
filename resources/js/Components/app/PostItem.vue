@@ -1,36 +1,77 @@
 <script setup>
-import {Disclosure, DisclosureButton, DisclosurePanel} from '@headlessui/vue'
+import {Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems} from '@headlessui/vue'
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import PostUserHeader from "@/Components/app/PostUserHeader.vue";
 
-defineProps({
+const props = defineProps({
     post: Object
-})
+});
 
-function is_image(attachment) {
+const emit = defineEmits(['openEditModal']);
+
+const is_image = (attachment) => {
     return attachment.mime.split('/')[0].toLowerCase() === 'image'
 }
+
+const openEditModal = _ => {
+    emit('openEditModal', props.post)
+};
 </script>
 
 <template>
     <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow rounded p-4 shadow-sm">
         <div class="flex items-center gap-3 mb-3">
-            <a href="javascript:void(0)">
-                <img :src="post.user.avatar_url || '/images/profile.png'" alt="avatar"
-                     class="w-[48px] rounded-full border border-2 transition-all hover:border-blue-500">
-            </a>
-            <div>
-                <h4 class="font-bold flex items-center">
-                    <a href="javascript:void(0)" class="font-medium text-sm text-gray-700 dark:text-gray-300 hover:underline">{{ post.user.name }}</a>
-                    <template v-if="post.group">
-                        <svg class="mx-2" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff"
-                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M13 17l5-5-5-5M6 17l5-5-5-5"/>
+            <PostUserHeader :post="post"/>
+            <Menu as="div" class="relative inline-block text-left ms-auto">
+                <div>
+                    <MenuButton class="rounded-full hover:bg-black/25 transition p-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="1"></circle>
+                            <circle cx="12" cy="5" r="1"></circle>
+                            <circle cx="12" cy="19" r="1"></circle>
                         </svg>
-                        <a href="javascript:void(0)" class="font-medium text-sm text-gray-700 dark:text-gray-300 hover:underline">{{ post.group.name }}</a>
-                    </template>
-                </h4>
-                <small class="text-sm text-gray-600 dark:text-gray-400">{{ post.created_at }}</small>
-            </div>
+                    </MenuButton>
+                </div>
+
+                <transition
+                    enter-active-class="transition duration-100 ease-out"
+                    enter-from-class="transform scale-95 opacity-0"
+                    enter-to-class="transform scale-100 opacity-100"
+                    leave-active-class="transition duration-75 ease-in"
+                    leave-from-class="transform scale-100 opacity-100"
+                    leave-to-class="transform scale-95 opacity-0">
+
+                    <MenuItems
+                        class="absolute right-0 mt-2 w-32 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none">
+                        <div class="px-1 py-1">
+                            <MenuItem v-slot="{ active }">
+                                <button @click="openEditModal"
+                                        class="text-gray-900 group flex gap-2 px-3 w-full items-center rounded-md px-2 py-2 text-sm hover:bg-indigo-500 hover:text-white">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000000"
+                                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polygon points="16 3 21 8 8 21 3 21 3 16 16 3"></polygon>
+                                    </svg>
+                                    Edit
+                                </button>
+                            </MenuItem>
+                            <MenuItem v-slot="{ active }">
+                                <button
+                                    class="text-gray-900 group flex gap-2 px-3 w-full items-center rounded-md px-2 py-2 text-sm hover:bg-indigo-500 hover:text-white">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000000"
+                                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                                    </svg>
+                                    Delete
+                                </button>
+                            </MenuItem>
+                        </div>
+                    </MenuItems>
+                </transition>
+            </Menu>
         </div>
         <div>
             <Disclosure v-slot="{ open }">
