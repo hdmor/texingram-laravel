@@ -1,10 +1,15 @@
 <script setup>
 import {computed, watch} from 'vue';
 import {Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot,} from '@headlessui/vue';
-import TextAreaInput from "@/Components/TextAreaInput.vue";
 import PostUserHeader from "@/Components/app/PostUserHeader.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import {useForm} from "@inertiajs/vue3";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+
+const editor = ClassicEditor;
+const editorConfig = {
+    toolbar: ['heading', '|', 'bold', 'italic', '|', 'link', '|', 'bulletedList', 'numberedList', '|', 'outdent', 'indent', '|', 'blockQuote']
+};
 
 const props = defineProps({
     post: {
@@ -86,7 +91,7 @@ const update = _ => {
                                     <div class="flex items-center gap-2 my-3">
                                         <PostUserHeader :post="post" :displayTime="false" avatarWidth="w-[32px]"/>
                                     </div>
-                                    <TextAreaInput v-model="form.body" class="w-full"/>
+                                    <ckeditor :editor="editor" v-model="form.body" :config="editorConfig"></ckeditor>
                                 </div>
 
                                 <div class="mt-4 flex justify-end">

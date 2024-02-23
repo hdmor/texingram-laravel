@@ -81,10 +81,10 @@ const deletePost = _ => {
         </div>
         <div>
             <Disclosure v-slot="{ open }">
-                <div v-show="!open" v-html="post.body.substring(0,200)" class="text-sm text-gray-600 dark:text-gray-400"/>
+                <div v-show="!open" v-html="post.body.substring(0,200)" class="text-sm text-gray-600 dark:text-gray-400 ck-content"/>
                 <template v-if="post.body.length >= 200">
                     <DisclosurePanel>
-                        <div v-html="post.body" class="text-sm text-gray-600 dark:text-gray-400"/>
+                        <div v-html="post.body" class="text-sm text-gray-600 dark:text-gray-400 ck-content"/>
                     </DisclosurePanel>
                     <div class="flex justify-end my-3">
                         <DisclosureButton class="text-blue-500 hover:underline">Read {{ open ? 'Less' : 'More' }}</DisclosureButton>
