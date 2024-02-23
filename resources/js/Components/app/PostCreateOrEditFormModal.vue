@@ -4,9 +4,9 @@ import {Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot,} from
 import PostUserHeader from "@/Components/app/PostUserHeader.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import {useForm} from "@inertiajs/vue3";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import BalloonEditor from "@ckeditor/ckeditor5-build-balloon";
 
-const editor = ClassicEditor;
+const editor = BalloonEditor;
 const editorConfig = {
     toolbar: ['heading', '|', 'bold', 'italic', '|', 'link', '|', 'bulletedList', 'numberedList', '|', 'outdent', 'indent', '|', 'blockQuote']
 };
@@ -26,10 +26,6 @@ const show = computed({
 
 const emit = defineEmits(['update:modelValue'])
 
-function closeModal() {
-    show.value = false;
-}
-
 const form = useForm({
     id: null,
     body: ''
@@ -39,11 +35,24 @@ watch(() => props.post, (newValue) => {
     form.id = newValue.id
     form.body = newValue.body
 });
-const update = _ => {
+
+function store() {
+    console.log('store is called')
+    form.post(route('posts.store'), {
+        preserveScroll: true,
+        onSuccess: _ => {
+            show.value = false;
+            form.reset();
+        }
+    });
+};
+
+function update() {
     form.patch(route('posts.update', props.post.id), {
         preserveScroll: true,
         onSuccess: _ => {
-            closeModal();
+            show.value = false;
+            form.reset();
         }
     });
 };
@@ -52,7 +61,7 @@ const update = _ => {
 <template>
     <teleport to="body">
         <TransitionRoot appear :show="show" as="template">
-            <Dialog as="div" @close="closeModal" class="relative z-10">
+            <Dialog as="div" @close="show = false" class="relative z-10">
                 <TransitionChild
                     as="template"
                     enter="duration-300 ease-out"
@@ -78,8 +87,8 @@ const update = _ => {
                                 class="w-full max-w-md transform overflow-hidden rounded bg-white dark:bg-gray-800 shadow p-4 sm:p-8 text-left align-middle shadow-xl transition-all">
                                 <DialogTitle as="h3"
                                              class="pb-3 flex justify-between items-center text-lg font-medium text-gray-900 dark:text-gray-100 border-b border-gray-700">
-                                    Edit Post
-                                    <button class="rounded-full hover:bg-black/25 transition p-2" @click="closeModal">
+                                    {{ form.id ? 'Edit' : 'Create New' }} Post
+                                    <button class="rounded-full hover:bg-black/25 transition p-2" @click="show = false">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff"
                                              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -91,11 +100,14 @@ const update = _ => {
                                     <div class="flex items-center gap-2 my-3">
                                         <PostUserHeader :post="post" :displayTime="false" avatarWidth="w-[32px]"/>
                                     </div>
-                                    <ckeditor :editor="editor" v-model="form.body" :config="editorConfig"></ckeditor>
+                                    <ckeditor :editor="editor" v-model="form.body" :config="editorConfig"
+                                              class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"></ckeditor>
                                 </div>
 
                                 <div class="mt-4 flex justify-end">
-                                    <PrimaryButton type="button" @click="update">Update</PrimaryButton>
+                                    <PrimaryButton type="button" @click="form.id ? update() : store()">
+                                        {{ form.id ? 'Update' : 'Save' }}
+                                    </PrimaryButton>
                                 </div>
                             </DialogPanel>
                         </TransitionChild>

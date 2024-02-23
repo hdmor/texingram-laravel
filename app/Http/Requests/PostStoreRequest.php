@@ -27,9 +27,12 @@ class PostStoreRequest extends FormRequest
         ];
     }
 
-    protected function prepareForValidation() : void
+    protected function prepareForValidation(): void
     {
         // use model relations instead of this!
-        $this->merge(['user_id' => auth()->user()->getAuthIdentifier()]);
+        $this->merge([
+            'user_id' => auth()->user()->getAuthIdentifier(),
+            'body' => $this->input('body') ?: ''
+        ]);
     }
 }

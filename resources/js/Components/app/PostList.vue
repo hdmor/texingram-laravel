@@ -1,6 +1,6 @@
 <script setup>
 import PostItem from "@/Components/app/PostItem.vue";
-import PostEditModal from "@/Components/app/PostEditModal.vue";
+import PostEditModal from "@/Components/app/PostCreateOrEditFormModal.vue";
 import {ref} from "vue";
 
 defineProps({
