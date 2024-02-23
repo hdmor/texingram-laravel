@@ -37,7 +37,6 @@ watch(() => props.post, (newValue) => {
 });
 
 function store() {
-    console.log('store is called')
     form.post(route('posts.store'), {
         preserveScroll: true,
         onSuccess: _ => {
