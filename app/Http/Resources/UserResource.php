@@ -19,6 +19,7 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'username' => $this->username,
+            'email' => $this->email,
             'avatar_url' => $this->avatar_path ? Storage::url($this->avatar_path) : null,
             'cover_url' => $this->cover_path ? Storage::url($this->cover_path) : null
         ];
