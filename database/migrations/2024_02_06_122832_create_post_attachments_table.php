@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->string('name', 256);
             $table->string('path', 256);
             $table->string('mime', 24);
+            $table->integer('size');
             $table->foreignId('created_by')->constrained('users');
             $table->timestamp('created_at')->nullable();
         });

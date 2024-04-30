@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\PostStoreRequest;
 use App\Http\Requests\PostUpdateRequest;
 use App\Models\Post;
-use Illuminate\Http\Request;
+use App\Models\PostAttachment;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -15,7 +18,32 @@ class PostController extends Controller
     public function store(PostStoreRequest $request)
     {
         $data = $request->validated();
-        Post::query()->create($data);
+        DB::beginTransaction();
+        $stored_file_paths = [];
+        try {
+            $post = Post::query()->create($data);
+
+            /** @var UploadedFile[] $attachments */
+            $attachments = $data['attachments'] ?? [];
+            foreach ($attachments as $file) {
+                $path = $file->store("attachments/{$post->getAttribute('id')}", 'public');
+                $stored_file_paths[] = $path;
+                PostAttachment::query()->create([
+                    'post_id' => $post->getAttribute('id'),
+                    'name' => $file->getClientOriginalName(),
+                    'path' => $path,
+                    'mime' => $file->getMimeType(),
+                    'size' => $file->getSize(),
+                    'created_by' => auth()->user()->getAuthIdentifier()
+                ]);
+            }
+            DB::commit();
+        } catch (\Exception $exception) {
+            foreach ($stored_file_paths as $stored_file_path) {
+                Storage::disk('public')->delete($stored_file_path);
+            }
+            DB::rollBack();
+        }
         return back();
     }
 

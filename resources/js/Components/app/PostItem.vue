@@ -90,16 +90,20 @@ const deletePost = _ => {
             </Disclosure>
         </div>
         <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-3">
-            <template v-for="attachment of post.attachments" :key="attachment.id">
+            <template v-for="(attachment, index) of post.attachments.slice(0,3)" :key="attachment.id">
                 <div class="group bg-blue-100 aspect-square flex flex-col items-center justify-center relative">
+                    <div v-if="index === 2"
+                         class="absolute left-0 top-0 right-0 bottom-0 z-1 bg-black/60 text-white flex items-center justify-center text-2xl">
+                        +{{ post.attachments.length - 3 }} more
+                    </div>
                     <button
-                        class="opacity-0 group-hover:opacity-100 transition-all w-8 h-8 flex items-center justify-center bg-gray-700 hover:bg-gray-800 rounded absolute right-2 top-2">
+                        class="z-2 opacity-0 group-hover:opacity-100 transition-all w-8 h-8 flex items-center justify-center bg-gray-700 hover:bg-gray-800 rounded absolute right-2 top-2">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2"
                              stroke-linecap="round" stroke-linejoin="round">
                             <path d="M3 15v4c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2v-4M17 9l-5 5-5-5M12 12.8V2.5"/>
                         </svg>
                     </button>
-                    <img v-if="isImage(attachment)" :src="attachment.url" :alt="attachment.name" class="aspect-square object-cover">
+                    <img v-if="isImage(attachment)" :src="attachment.url" :alt="attachment.name" class="aspect-square object-cover w-full h-full">
                     <template v-else>
                         <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2"
                              stroke-linecap="round" stroke-linejoin="round">

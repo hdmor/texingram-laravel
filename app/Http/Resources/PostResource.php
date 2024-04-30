@@ -21,7 +21,7 @@ class PostResource extends JsonResource
             'updated_at' => $this->updated_at->diffForHumans(),
             'user' => new UserResource($this->user),
             'group' => $this->group,
-            'attachments' => $this->attachment
+            'attachments' => PostAttachmentResource::collection($this->attachments)
         ];
     }
 }

@@ -30,7 +30,8 @@ const emit = defineEmits(['update:modelValue'])
 
 const form = useForm({
     id: null,
-    body: ''
+    body: '',
+    attachments: []
 });
 
 watch(() => props.post, (newValue) => {
@@ -38,11 +39,15 @@ watch(() => props.post, (newValue) => {
     form.body = newValue.body
 });
 
+const attachments = ref([]);
+
 function store() {
+    form.attachments = attachments.value.map(attachment => attachment.file)
     form.post(route('posts.store'), {
         preserveScroll: true,
         onSuccess: _ => {
             show.value = false;
+            attachments.value = [];
             form.reset();
         }
     });
@@ -53,12 +58,11 @@ function update() {
         preserveScroll: true,
         onSuccess: _ => {
             show.value = false;
+            attachments.value = [];
             form.reset();
         }
     });
 }
-
-const attachments = ref([]);
 
 async function onAttachmentChanged($event) {
     for (const file of $event.target.files) {
@@ -137,7 +141,7 @@ const removeAttachment = (attachment) => {
                                         <template v-for="(attachment, index) of attachments" :key="index">
                                             <div class="group bg-blue-100 aspect-square flex flex-col items-center justify-center gap-4 relative">
                                                 <button @click="removeAttachment(attachment)"
-                                                        class="opacity-0 group-hover:opacity-100 transition-all w-8 h-8 flex items-center justify-center bg-gray-700 hover:bg-gray-800 rounded absolute right-2 top-2">
+                                                        class="opacity-0 group-hover:opacity-100 transition-all w-8 h-8 flex items-center justify-center bg-gray-700 hover:bg-gray-800 rounded absolute right-1 top-1">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                                                          stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                         <line x1="18" y1="6" x2="6" y2="18"></line>
