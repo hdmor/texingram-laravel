@@ -26,20 +26,32 @@ const show = computed({
     set: (value) => emit('update:modelValue', value)
 })
 
+watch(() => show.value, (newValue) => {
+    if (!newValue) {
+        computedAttachments.value.forEach(attachment => attachment.deleted = false)
+    }
+})
+
+const attachments = ref([]);
+
+const computedAttachments = computed(() => {
+    return props.post.attachments? [...attachments.value, ...props.post.attachments] : attachments.value
+})
+
 const emit = defineEmits(['update:modelValue'])
 
 const form = useForm({
     id: null,
     body: '',
-    attachments: []
+    attachments: [],
+    deletedAttachments: [],
+    _method: 'POST'
 });
 
 watch(() => props.post, (newValue) => {
     form.id = newValue.id
     form.body = newValue.body
 });
-
-const attachments = ref([]);
 
 function store() {
     form.attachments = attachments.value.map(attachment => attachment.file)
@@ -54,7 +66,9 @@ function store() {
 }
 
 function update() {
-    form.patch(route('posts.update', props.post.id), {
+    form.attachments = attachments.value.map(attachment => attachment.file)
+    form._method = 'PUT'
+    form.post(route('posts.update', form.id), {
         preserveScroll: true,
         onSuccess: _ => {
             show.value = false;
@@ -89,7 +103,17 @@ async function readFile(file) {
 }
 
 const removeAttachment = (attachment) => {
-    attachments.value = attachments.value.filter(a => a !== attachment)
+    if (attachment.file)
+        attachments.value = attachments.value.filter(a => a !== attachment)
+    else {
+        form.deletedAttachments.push(attachment.id)
+        attachment.deleted = true
+    }
+}
+
+const restoreAttachment = (attachment) => {
+    attachment.deleted = false
+    form.deletedAttachments = form.deletedAttachments.filter(id => id !== attachment.id)
 }
 </script>
 
@@ -138,9 +162,19 @@ const removeAttachment = (attachment) => {
                                     <ckeditor :editor="editor" v-model="form.body" :config="editorConfig"
                                               class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"></ckeditor>
                                     <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 my-3">
-                                        <template v-for="(attachment, index) of attachments" :key="index">
+                                        <template v-for="(attachment, index) of computedAttachments" :key="index">
                                             <div class="group bg-blue-100 aspect-square flex flex-col items-center justify-center gap-4 relative">
-                                                <button @click="removeAttachment(attachment)"
+                                                <div v-if="attachment.deleted"
+                                                     class="flex justify-between items-center absolute text-sm left-0 bottom-0 right-0 px-3 py-2 bg-black text-white">
+                                                    To be deleted
+                                                    <button @click="restoreAttachment(attachment)" title="Restore" class="z-10">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                             stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                            <path d="M2.5 2v6h6M2.66 15.57a10 10 0 1 0 .57-8.38"/>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                                <button v-if="!attachment.deleted" @click="removeAttachment(attachment)"
                                                         class="opacity-0 group-hover:opacity-100 transition-all w-8 h-8 flex items-center justify-center bg-gray-700 hover:bg-gray-800 rounded absolute right-1 top-1">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                                                          stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -148,16 +182,18 @@ const removeAttachment = (attachment) => {
                                                         <line x1="6" y1="6" x2="18" y2="18"></line>
                                                     </svg>
                                                 </button>
-                                                <img v-if="isImage(attachment.file)" :src="attachment.url" :alt="attachment.file.name"
-                                                     class="aspect-square object-cover w-full h-full">
-                                                <template v-else>
+                                                <img v-if="isImage(attachment.file || attachment)" :src="attachment.url"
+                                                     :alt="(attachment.file || attachment).name"
+                                                     class="aspect-square object-cover w-full h-full" :class="attachment.deleted ? 'opacity-50' : ''">
+                                                <div v-else class="flex flex-col justify-center items-center gap-3"
+                                                     :class="attachment.deleted ? 'opacity-50' : ''">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
                                                          stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                         <path
                                                             d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
                                                     </svg>
-                                                    <small class="text-xs text-center">{{ attachment.file.name }}</small>
-                                                </template>
+                                                    <small class="text-xs text-center">{{ (attachment.file || attachment).name }}</small>
+                                                </div>
                                             </div>
                                         </template>
                                     </div>

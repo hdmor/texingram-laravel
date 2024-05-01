@@ -25,7 +25,7 @@ const deletePost = _ => {
     <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow rounded p-4 shadow-sm">
         <div class="flex items-center gap-3 mb-3">
             <PostUserHeader :post="post"/>
-            <Menu as="div" class="relative inline-block text-left ms-auto">
+            <Menu as="div" class="relative inline-block text-left ms-auto z-10">
                 <div>
                     <MenuButton class="rounded-full hover:bg-black/25 transition p-2">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2"
@@ -92,7 +92,7 @@ const deletePost = _ => {
         <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-3">
             <template v-for="(attachment, index) of post.attachments.slice(0,3)" :key="attachment.id">
                 <div class="group bg-blue-100 aspect-square flex flex-col items-center justify-center relative">
-                    <div v-if="index === 2"
+                    <div v-if="index === 2 && post.attachments.length > 3"
                          class="absolute left-0 top-0 right-0 bottom-0 z-1 bg-black/60 text-white flex items-center justify-center text-2xl">
                         +{{ post.attachments.length - 3 }} more
                     </div>
